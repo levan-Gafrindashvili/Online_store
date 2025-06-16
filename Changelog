@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v0.4.6] - 2025-06-16
+
+### Added
+- **Checkout process and success confirmation page**
+  - Implemented a simple checkout workflow using session-based cart clearing.
+  - Added a new CBV: `CheckoutView` (handles `POST`, clears cart, redirects with success message).
+  - Added a `CheckoutSuccessView` using `TemplateView` to show a friendly success message.
+  - Created new template: `checkout_success.html` with confirmation and return link.
+
+### Fixed
+- **NoReverseMatch for 'checkout'**
+  - Defined proper URL patterns for `checkout` and `checkout_success` in `shop/urls.py` using `.as_view()` on the new CBVs.
+  - Ensured correct `{% url 'shop:checkout' %}` usage in `cart.html`.
+
+---
+
 ## [v0.4.5] - 2025-06-10
 
 ### Fixed
@@ -34,7 +50,6 @@ All notable changes to this project will be documented in this file.
 ## [v0.4.3] - 2025-06-09
 
 ### Fixed
-
 - Resolved `OperationalError` caused by missing `fullname` column in the `Review` model by reapplying migrations after updating the model.
 - Fixed Django warning `urls.W005` by ensuring URL namespace `'shop'` is only included once to avoid namespace conflicts and routing issues.
 - Cleaned and simplified `config/urls.py`:
@@ -43,13 +58,11 @@ All notable changes to this project will be documented in this file.
   - Ensured clean integration with Django’s built-in auth views under `/accounts/`.
 
 ### Notes
-
 - These changes improve routing clarity, prevent unexpected reverse URL resolution failures, and ensure that all paths defined in `shop/urls.py` work consistently without namespace conflicts.
 
 ## [v0.4.2] - 2025-06-09
 
 ### Changed
-
 - Revamped login page design with a clean, modern, and responsive UI using soft shadows, rounded forms, and smooth transitions.
 - Added scoped styles in `style.css` specifically targeting `.login-wrapper`, `.login-box`, `.form-group`, and related classes for the login page only.
 - Ensured no unrelated or global CSS rules were affected, preserving styling consistency across other templates.
@@ -58,7 +71,6 @@ All notable changes to this project will be documented in this file.
 ## [v0.4.1] - 2025-06-08
 
 ### Changed
-
 - Cleaned up and slimmed down CSS file by removing duplicate and unnecessary rules for better maintainability and performance.
 - Simplified and optimized HTML templates (`product_list.html`, `product_detail.html`, `login.html`, `cart.html`, `add_product.html`) by removing redundant inline styles and unused elements, relying on the updated CSS for styling consistency.
 - Improved semantic structure and reduced inline styling in the top bar, product cards, filters, and forms across templates.
@@ -67,45 +79,6 @@ All notable changes to this project will be documented in this file.
 ## [v0.4.0] - 2025-06-05
 
 ### Added
-
 - Added login/logout links to the product list navbar for user authentication navigation.
 - Implemented conditional rendering in navbar to show login link if user is anonymous and logout link if authenticated.
-- Created CSS styles for the navbar, login, and logout links to improve UI consistency and responsiveness.
-- Updated `product_list.html` template to integrate login/logout UI components within the top navigation bar.
-
-## [v0.3.0] - 2025-06-05
-
-### Added
-
-- Implemented "Add to Cart" functionality with session-based cart management.
-- Created cart views to display cart contents, update item quantities, and remove items.
-- Added cart update functionality (increment, decrement, remove) via POST requests.
-- Added "Add to Cart" button links on the product listing page.
-- Created cart template (`cart.html`) displaying cart items, quantity controls, and total price.
-- Created `utils.py` for helper functions such as managing session keys.
-
-### Changed
-
-- Updated product list template to include functional "Add to Cart" buttons linking to cart views.
-- Enhanced URL routing to include cart-related paths (`cart_view`, `add_to_cart`, `update_cart`).
-
-## [v0.2.0] - 2025-06-03
-
-### Added
-
-- Main page URL routing and view (`product_list`) with support for:
-  - Displaying all products.
-  - Searching by product name.
-  - Filtering by category, subcategory, brand, price range, and rating.
-- Template for product listing with product cards (image, name, price, rating, add-to-cart button).
-
-## [v0.1.0] - 2025-06-02
-
-### Added
-
-- Project setup with virtual environment and Django installation.
-- Created Django project and app (`shop`).
-- Defined data models: Category, SubCategory, Brand, Product, Review, CartItem.
-- Applied migrations and created superuser.
-- Registered models in admin panel.
-- Configured static and media files handling.
+- Created CSS styles for the navbar, login, and logout links t

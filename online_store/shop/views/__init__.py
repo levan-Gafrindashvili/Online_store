@@ -11,7 +11,7 @@ from ..utils import get_cart_session_key
 from django.shortcuts import resolve_url 
 from shop.cart import Cart
 from shop.forms import CartAddProductForm
-
+from django.views.generic import TemplateView
 
 
 
@@ -207,3 +207,13 @@ class CartDetailView(View):
     def get(self, request):
         cart = Cart(request)
         return render(request, 'shop/cart_detail.html', {'cart': cart})
+
+class CheckoutView(View):
+    def post(self, request):
+        request.session['cart'] = {}
+        messages.success(request, "Checkout successful! Thank you for your purchase.")
+        return redirect('shop:checkout_success')
+
+
+class CheckoutSuccessView(TemplateView):
+    template_name = 'shop/checkout_success.html'

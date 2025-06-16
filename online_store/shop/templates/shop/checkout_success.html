@@ -1,0 +1,8 @@
+{% extends 'shop/base.html' %}
+{% block content %}
+  <div style="text-align: center; padding: 2rem;">
+    <h2>✅ Checkout Successful!</h2>
+    <p>Thank you for your order. Your cart has been cleared.</p>
+    <a href="{% url 'shop:product_list' %}" class="btn-primary">Continue Shopping</a>
+  </div>
+{% endblock %}

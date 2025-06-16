@@ -1,5 +1,4 @@
-{% extends "shop/base.html" %}
-{% block content %}
+{% extends "shop/base.html" %} {% block content %}
 
 <style>
   .cart-container {
@@ -31,7 +30,7 @@
     background: #f8f9fa;
     padding: 1rem;
     border-radius: 6px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
   }
 
   .cart-info h4 {
@@ -109,38 +108,75 @@
 <div class="cart-container">
   <h1>Your Cart</h1>
   {% if cart_items %}
-    <div class="cart-items">
-      {% for item in cart_items %}
-      <div class="cart-card">
-        <div class="cart-info">
-          <h4>{{ item.product.name }}</h4>
-          <p>Price: ${{ item.product.price }} | Total: ${{ item.total_price }}</p>
-        </div>
-        <div style="display: flex; align-items: center; gap: 0.5rem;">
-          <form method="post" action="{% url 'shop:update_cart' item.product.id %}">
-            {% csrf_token %}
-            <button type="submit" name="action" value="decrement" class="btn-small">−</button>
-          </form>
-
-          <span>{{ item.quantity }}</span>
-
-          <form method="post" action="{% url 'shop:update_cart' item.product.id %}">
-            {% csrf_token %}
-            <button type="submit" name="action" value="increment" class="btn-small">+</button>
-          </form>
-
-          <form method="post" action="{% url 'shop:update_cart' item.product.id %}">
-            {% csrf_token %}
-            <button type="submit" name="action" value="delete" class="btn-remove">Remove</button>
-          </form>
-        </div>
+  <div class="cart-items">
+    {% for item in cart_items %}
+    <div class="cart-card">
+      <div class="cart-info">
+        <h4>{{ item.product.name }}</h4>
+        <p>Price: ${{ item.product.price }} | Total: ${{ item.total_price }}</p>
       </div>
-      {% endfor %}
-    </div>
-    <h3 class="cart-total">Total: ${{ total }}</h3>
-  {% else %}
-    <p class="empty-cart">Your cart is empty.</p>
-  {% endif %}
-<a href="{% url 'shop:product_list' %}" class="btn btn-primary" style="background-color:#ffc107; color:#000; border:none;">Continue Shopping</a></div>
+      <div style="display: flex; align-items: center; gap: 0.5rem">
+        <form
+          method="post"
+          action="{% url 'shop:update_cart' item.product.id %}"
+        >
+          {% csrf_token %}
+          <button
+            type="submit"
+            name="action"
+            value="decrement"
+            class="btn-small"
+          >
+            −
+          </button>
+        </form>
 
+        <span>{{ item.quantity }}</span>
+
+        <form
+          method="post"
+          action="{% url 'shop:update_cart' item.product.id %}"
+        >
+          {% csrf_token %}
+          <button
+            type="submit"
+            name="action"
+            value="increment"
+            class="btn-small"
+          >
+            +
+          </button>
+        </form>
+
+        <form
+          method="post"
+          action="{% url 'shop:update_cart' item.product.id %}"
+        >
+          {% csrf_token %}
+          <button type="submit" name="action" value="delete" class="btn-remove">
+            Remove
+          </button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <h3 class="cart-total">Total: ${{ total }}</h3>
+  {% else %}
+  <p class="empty-cart">Your cart is empty.</p>
+  {% endif %}
+
+  <div style="display: flex; justify-content: space-between">
+    <a
+      href="{% url 'shop:product_list' %}"
+      class="btn btn-primary"
+      style="background-color: #ffc107; color: #000; border: none"
+      >Continue Shopping</a
+    >
+    <form method="post" action="{% url 'shop:checkout' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-success">Checkout</button>
+    </form>
+  </div>
+</div>
 {% endblock %}
