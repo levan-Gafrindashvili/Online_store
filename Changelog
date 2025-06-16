@@ -15,6 +15,12 @@ All notable changes to this project will be documented in this file.
   Modified the `get_context_data()` method to include `is_paginated` and `page_obj` in context for the template.  
   Styled pagination UI in CSS to match the existing design.
 
+### Fixed
+- **Module import error for `ProductListView`**  
+  Resolved `ModuleNotFoundError: No module named 'shop.views.products_list'` by creating the missing `products_list.py` file inside `shop/views/`.  
+  Moved the `ProductListView` class to `products_list.py` and updated `shop/views/__init__.py` to import it properly.  
+  This fixed server startup errors caused by incorrect view imports.
+
 ---
 
 ## [v0.4.5] - 2025-06-10

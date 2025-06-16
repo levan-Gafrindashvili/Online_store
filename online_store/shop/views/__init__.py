@@ -14,41 +14,40 @@ from shop.forms import CartAddProductForm
 from django.views.generic import TemplateView
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse
+from django.db.models import Avg
+from .product_list import ProductListView
 
 
 
-class ProductListView(ListView):
-    model = Product
-    template_name = 'shop/product_list.html'
-    context_object_name = 'products'
-    paginate_by = 8
+def get_queryset(self):
+    queryset = Product.objects.all().annotate(avg_rating=Avg('reviews__rating'))
+    q = self.request.GET.get('q')
+    category = self.request.GET.get('category')
+    subcategory = self.request.GET.get('subcategory')
+    brand = self.request.GET.get('brand')
+    min_price = self.request.GET.get('min_price')
+    max_price = self.request.GET.get('max_price')
+    min_rating = self.request.GET.get('min_rating')
 
-    def get_queryset(self):
-        queryset = Product.objects.all()
-        q = self.request.GET.get('q')
-        category = self.request.GET.get('category')
-        subcategory = self.request.GET.get('subcategory')
-        brand = self.request.GET.get('brand')
-        min_price = self.request.GET.get('min_price')
-        max_price = self.request.GET.get('max_price')
-        min_rating = self.request.GET.get('min_rating')
-
-        if q:
-            queryset = queryset.filter(name__icontains=q)
-        if category:
-            queryset = queryset.filter(category__id=category)
-        if subcategory:
-            queryset = queryset.filter(subcategory__id=subcategory)
-        if brand:
-            queryset = queryset.filter(brand__id=brand)
-        if min_price:
-            queryset = queryset.filter(price__gte=min_price)
-        if max_price:
-            queryset = queryset.filter(price__lte=max_price)
-        if min_rating:
-            queryset = queryset.filter(rating__gte=min_rating)
-
-        return queryset
+    if q:
+        queryset = queryset.filter(name__icontains=q)
+    if category:
+        queryset = queryset.filter(category__id=category)
+    if subcategory:
+        queryset = queryset.filter(subcategory__id=subcategory)
+    if brand:
+        queryset = queryset.filter(brand__id=brand)
+    if min_price:
+        queryset = queryset.filter(price__gte=min_price)
+    if max_price:
+        queryset = queryset.filter(price__lte=max_price)
+    if min_rating:
+        try:
+            min_rating_val = float(min_rating)
+            queryset = queryset.filter(avg_rating__gte=min_rating_val)
+        except ValueError:
+            pass
+    return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -122,7 +121,7 @@ class CartView(View):
 
 class RegisterView(View):
     def get(self, request):
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
         return render(request, 'shop/register.html', {'form': form})
 
     def post(self, request):
@@ -130,11 +129,9 @@ class RegisterView(View):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('shop/product_list.html')
+            return redirect('shop:product_list')
         return render(request, 'shop/register.html', {'form': form})
 
-
-from django.urls import reverse
 
 class LoginUserView(View):
     def get(self, request):
