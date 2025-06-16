@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cart detail - Online Store</title>
+    <h1>Your Cart</h1>
+  </head>
+
+  {% if cart %}
+  <h1 style="font-size: 1.8rem; color: #333; margin-top: 2rem">Your Cart</h1>
+
+  {% if cart %}
+  <ul style="list-style: none; padding: 0; margin-top: 1.5rem">
+    {% for item in cart %}
+    <li
+      style="
+        background: white;
+        margin-bottom: 1rem;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+      "
+    >
+      <div>
+        <strong style="font-size: 1.1rem">{{ item.product.name }}</strong><br />
+        <span style="color: #555">Quantity: {{ item.quantity }}</span> <br />
+        <span style="color: #555">Price: ${{ item.price }}</span><br />
+        <span style="font-weight: 500">Total: ${{ item.total_price }}</span>
+      </div>
+      <form
+        action="{% url 'cart:remove' item.product.id %}"
+        method="post"
+        style="margin-left: 1rem"
+      >
+        {% csrf_token %}
+        <button
+          type="submit"
+          style="
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+          "
+        >
+          Remove
+        </button>
+      </form>
+    </li>
+    {% endfor %}
+  </ul>
+
+  <p style="font-size: 1.3rem; color: #007bff; font-weight: bold">
+    Total: ${{ cart.get_total_price }}
+  </p>
+
+  {% else %}
+  <p style="margin-top: 2rem; font-size: 1rem; color: #666">
+    Your cart is empty.
+  </p>
+  {% endif %}
+
+  <ul>
+    {% for item in cart %}
+    <li>
+      {{ item.product.name }} - Quantity: {{ item.quantity }} - Price: ${{
+      item.price }} - Total: ${{ item.total_price }}
+      <form
+        action="{% url 'cart:remove' item.product.id %}"
+        method="post"
+        style="display: inline"
+      >
+        {% csrf_token %}
+        <button type="submit">Remove</button>
+      </form>
+    </li>
+    {% endfor %}
+  </ul>
+  <p>Total: ${{ cart.get_total_price }}</p>
+  {% else %}
+  <p>Your cart is empty.</p>
+  {% endif %}
+</html>

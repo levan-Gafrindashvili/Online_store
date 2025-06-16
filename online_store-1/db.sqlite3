@@ -1,0 +1,3 @@
+The db.sqlite3 file is a binary database file created by Django and is not meant to be manually edited or generated with specific contents. It will be automatically created and managed by Django when you run migrations or interact with the database through your application.
+
+Therefore, this file is intentionally left blank.

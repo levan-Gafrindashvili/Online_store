@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>Your Cart</h2>
+
+{% if cart_items %}
+    <div class="cart-items">
+        {% for item in cart_items %}
+        <div class="cart-card" style="display: flex; gap: 20px; margin-bottom: 20px;">
+            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 150px; height: auto;" />
+            <div>
+                <h4>{{ item.product.name }}</h4>
+                <p>Price: ${{ item.product.price }}</p>
+                <p>Subtotal: ${{ item.subtotal }}</p>
+                <form method="post" action="{% url 'update_cart' item.id %}" style="display: flex; align-items: center; gap: 10px;">
+                    {% csrf_token %}
+                    <button type="submit" name="action" value="decrement" aria-label="Decrease quantity">−</button>
+                    <span>{{ item.quantity }}</span>
+                    <button type="submit" name="action" value="increment" aria-label="Increase quantity">+</button>
+                    <button type="submit" name="action" value="delete" style="margin-left: 20px;">Remove</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <h3>Total: ${{ total }}</h3>
+{% else %}
+    <p>Your cart is empty.</p>
+{% endif %}
+
+{% endblock %}

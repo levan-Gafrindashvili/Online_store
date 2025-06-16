@@ -1,0 +1,251 @@
+{% extends 'shop/base.html' %} {% load static %} {% block content %}
+<style>
+  .product-detail {
+    background: white;
+    padding: 2rem;
+    margin: 2rem auto;
+    max-width: 1000px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .product-header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .product-image {
+    max-width: 300px;
+    border-radius: 8px;
+  }
+
+  .product-info {
+    flex: 1;
+  }
+
+  .product-info h2 {
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+
+  .price {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #007bff;
+    margin-bottom: 1rem;
+  }
+
+  .short-description {
+    color: #666;
+  }
+
+  .tabs {
+    margin: 2rem 0 1rem;
+    display: flex;
+    gap: 1rem;
+  }
+
+  .tabs button {
+    padding: 0.6rem 1.2rem;
+    background-color: #e9ecef;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  .tabs button:hover {
+    background-color: #ced4da;
+  }
+
+  .tab-content {
+    padding: 1rem 0;
+    border-top: 1px solid #ddd;
+  }
+
+  .review {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+  }
+
+  .review strong {
+    display: inline-block;
+    margin-bottom: 0.3rem;
+  }
+
+  .review span {
+    color: #ffc107;
+  }
+
+  .btn-primary {
+    padding: 0.6rem 1.2rem;
+    background-color: #ffc107;
+    color: #000;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 1rem;
+  }
+
+  .btn-primary:hover {
+    background-color: #e0a800;
+  }
+
+  /* Modal styles */
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    display: none;
+    z-index: 1000;
+  }
+
+  .modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal-content label {
+    display: block;
+    margin-top: 1rem;
+    font-weight: 500;
+  }
+
+  .modal-content input,
+  .modal-content textarea {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.3rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  .modal-content textarea {
+    resize: vertical;
+  }
+
+  .modal-content button {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .modal-content button[type="button"] {
+    background: #dc3545;
+    margin-left: 0.5rem;
+  }
+
+  .modal-content button:hover {
+    opacity: 0.9;
+  }
+</style>
+
+<div class="product-detail">
+  <div class="product-header">
+    <img
+      src="{{ product.image.url }}"
+      alt="{{ product.name }}"
+      class="product-image"
+    />
+    <div class="product-info">
+      <h2>{{ product.name }}</h2>
+      <p class="price">${{ product.price }}</p>
+      <p class="short-description">{{ product.short_description }}</p>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button type="button" onclick="showTab('details')">Details</button>
+    <button type="button" onclick="showTab('reviews')">Reviews</button>
+  </div>
+
+  <div id="tab-details" class="tab-content">
+    <h3>Product Details</h3>
+    <p>{{ product.long_description }}</p>
+  </div>
+
+  <div id="tab-reviews" class="tab-content" style="display: none">
+    <h3>Customer Reviews</h3>
+    {% for review in reviews %}
+    <div class="review">
+      <strong>{{ review.fullname }}</strong>
+      <span>
+        {% for i in "12345"|slice:":review.rating"|make_list %} ★ {% endfor %}
+        ({{ review.rating }})
+      </span>
+      <p>{{ review.text }}</p>
+    </div>
+    {% empty %}
+    <p>No reviews yet.</p>
+    {% endfor %}
+    <button type="button" class="btn-primary" onclick="openReviewModal()">
+      Write a Review
+    </button>
+  </div>
+
+  <!-- Add to Cart Button -->
+  <form method="post" action="{% url 'shop:add_to_cart' product.id %}">
+    {% csrf_token %}
+  </form>
+  <form method="post" action="{% url 'shop:add_to_cart' product.id %}">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="add_to_cart" />
+    <button type="submit" class="btn btn-primary">Add to Cart</button>
+  </form>
+</div>
+
+<!-- Review Modal -->
+<div id="review-modal" class="modal">
+  <div class="modal-content">
+    <h3>Submit a Review</h3>
+    <form method="post" action="{% url 'shop:submit_review' product.id %}">
+      {% csrf_token %}
+      <label for="name">Name:</label>
+      <input type="text" name="fullname" required />
+
+      <label for="rating">Rating (1–5):</label>
+      <input type="number" name="rating" min="1" max="5" required />
+
+      <label for="text">Review:</label>
+      <textarea name="text" rows="4" required></textarea>
+
+      <button type="submit">Submit</button>
+      <button type="button" onclick="closeReviewModal()">Cancel</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  function showTab(tab) {
+    document.getElementById("tab-details").style.display =
+      tab === "details" ? "block" : "none";
+    document.getElementById("tab-reviews").style.display =
+      tab === "reviews" ? "block" : "none";
+  }
+
+  function openReviewModal() {
+    document.getElementById("review-modal").style.display = "flex";
+  }
+
+  function closeReviewModal() {
+    document.getElementById("review-modal").style.display = "none";
+  }
+</script>
+{% endblock %}

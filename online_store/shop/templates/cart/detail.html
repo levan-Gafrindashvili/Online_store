@@ -1,0 +1,146 @@
+{% extends "shop/base.html" %}
+{% block content %}
+
+<style>
+  .cart-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .cart-container h1 {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 1.5rem;
+  }
+
+  .cart-items {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .cart-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+
+  .cart-info h4 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #333;
+  }
+
+  .cart-info p {
+    margin: 0.4rem 0 0;
+    color: #555;
+    font-size: 0.95rem;
+  }
+
+  .btn-remove {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .btn-remove:hover {
+    background-color: #c82333;
+  }
+
+  .btn-small {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  .btn-small:hover {
+    background-color: #0056b3;
+  }
+
+  .cart-total {
+    font-size: 1.3rem;
+    color: #007bff;
+    font-weight: bold;
+    text-align: right;
+    margin-top: 1rem;
+  }
+
+  .btn-primary {
+    display: inline-block;
+    margin-top: 1.5rem;
+    padding: 0.6rem 1.2rem;
+    background-color: #ffc107;
+    color: #000;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .btn-primary:hover {
+    background-color: #e0a800;
+  }
+
+  .empty-cart {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 2rem;
+  }
+</style>
+
+<div class="cart-container">
+  <h1>Your Cart</h1>
+  {% if cart_items %}
+    <div class="cart-items">
+      {% for item in cart_items %}
+      <div class="cart-card">
+        <div class="cart-info">
+          <h4>{{ item.product.name }}</h4>
+          <p>Price: ${{ item.product.price }} | Total: ${{ item.total_price }}</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <form method="post" action="{% url 'shop:update_cart' item.product.id %}">
+            {% csrf_token %}
+            <button type="submit" name="action" value="decrement" class="btn-small">−</button>
+          </form>
+
+          <span>{{ item.quantity }}</span>
+
+          <form method="post" action="{% url 'shop:update_cart' item.product.id %}">
+            {% csrf_token %}
+            <button type="submit" name="action" value="increment" class="btn-small">+</button>
+          </form>
+
+          <form method="post" action="{% url 'shop:update_cart' item.product.id %}">
+            {% csrf_token %}
+            <button type="submit" name="action" value="delete" class="btn-remove">Remove</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <h3 class="cart-total">Total: ${{ total }}</h3>
+  {% else %}
+    <p class="empty-cart">Your cart is empty.</p>
+  {% endif %}
+<a href="{% url 'shop:product_list' %}" class="btn btn-primary" style="background-color:#ffc107; color:#000; border:none;">Continue Shopping</a></div>
+
+{% endblock %}
