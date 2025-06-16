@@ -164,6 +164,33 @@
     .product-card .btn:hover {
       background: #e0a800;
     }
+
+    .pagination-wrapper {
+      text-align: center;
+      margin: 2rem auto;
+    }
+
+    .pagination {
+      display: inline-flex;
+      list-style: none;
+      gap: 0.5rem;
+      padding: 0;
+    }
+
+    .pagination li a,
+    .pagination li span {
+      padding: 0.5rem 0.8rem;
+      border-radius: 4px;
+      text-decoration: none;
+      background: #f1f1f1;
+      color: #333;
+    }
+
+    .pagination li span.current {
+      background: #007bff;
+      color: white;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -236,10 +263,8 @@
       {% if object_list %}
         {% for product in object_list %}
         <div class="product-card">
-          <a href="{% url 'shop:product_detail' product.id %}">
-            <img src="{{ product.image.url }}" alt="{{ product.name }}" />
-            <h2>{{ product.name }}</h2>
-          </a>
+          <a href="{% url 'shop:product_detail' product.id %}"><img src="{{ product.image.url }}" alt="{{ product.name }}" />
+            <h2>{{ product.name }}</h2></a>
           <p>Price: ${{ product.price }}</p>
           <p>Rating: {{ product.rating }}</p>
           <form method="post" action="{% url 'shop:add_to_cart' product.id %}">
@@ -253,6 +278,30 @@
       {% endif %}
     </section>
   </main>
+
+  {% if is_paginated %}
+  <div class="pagination-wrapper">
+    <ul class="pagination">
+      {% if page_obj.has_previous %}
+        <li><a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page=1">« First</a></li>
+        <li><a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}">‹ Prev</a></li>
+      {% endif %}
+
+      {% for num in paginator.page_range %}
+        {% if page_obj.number == num %}
+          <li><span class="current">{{ num }}</span></li>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+          <li><a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ num }}">{{ num }}</a></li>
+        {% endif %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+        <li><a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}">Next ›</a></li>
+        <li><a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ paginator.num_pages }}">Last »</a></li>
+      {% endif %}
+    </ul>
+  </div>
+  {% endif %}
 
 </body>
 </html>
