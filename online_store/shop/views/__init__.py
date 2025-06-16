@@ -88,7 +88,7 @@ class SubmitReviewView(View):
         else:
             messages.error(request, 'Please fill in all fields.')
 
-        return redirect('product_detail', product_id=product_id)
+        return redirect('shop:product_detail', product_id=product_id)
 
 
 class AddToCartView(View):
