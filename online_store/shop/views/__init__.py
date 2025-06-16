@@ -12,6 +12,8 @@ from django.shortcuts import resolve_url
 from shop.cart import Cart
 from shop.forms import CartAddProductForm
 from django.views.generic import TemplateView
+from django.contrib.auth.forms import UserCreationForm
+from django.urls import reverse
 
 
 
@@ -120,16 +122,16 @@ class CartView(View):
 
 class RegisterView(View):
     def get(self, request):
-        form = CustomUserCreationForm()
-        return render(request, 'registration/register.html', {'form': form})
+        form = UserCreationForm()
+        return render(request, 'shop/register.html', {'form': form})
 
     def post(self, request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('product_list')
-        return render(request, 'registration/register.html', {'form': form})
+            return redirect('shop/product_list.html')
+        return render(request, 'shop/register.html', {'form': form})
 
 
 from django.urls import reverse
